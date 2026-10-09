@@ -1,112 +1,74 @@
 """
-EncyclopedicCatalog: Reference Curator Engine Implementation
-Demonstrates dynamic querying of asset metadata matrices for GCC pipelines.
+EncyclopedicCatalog: Scientific Curation Boilerplate (GCC Core)
+Integrates physics and chemistry constraint metadata tracks for R&D simulation.
 """
 
 import json
 from typing import Any, Dict, List, Optional
 
 
-class CatalogDatabase:
-    """Simulates an on-the-fly indexed database for world-state assets."""
+class ScientificAssetCatalog:
+    """Manages an authoritative catalog combining visual tokens and physical constants."""
     
     def __init__(self) -> None:
-        # Initializing mockup data mimicking model context schemas
         self.assets: List[Dict[str, Any]] = [
             {
-                "id": "char_hero_01",
-                "type": "character",
-                "tags": ["protagonist", "cyberpunk", "gritty"],
-                "metadata": {
-                    "name": "Kaelen",
-                    "emotional_vector": {"want": "retribution", "need": "acceptance"},
-                    "base_height_cm": 185
+                "id": "struct_pipe_01",
+                "type": "structural_element",
+                "tags": ["industrial", "conduit", "metallic"],
+                "visuals": {
+                    "mesh_source": "models/industrial/pipe_heavy_v3.gltf",
+                    "base_texture": "textures/steel_brushed_albedo.png"
+                },
+                # ---- PURE SCIENCE / SIMULATION TRACKS ----
+                "physics_metadata": {
+                    "density_g_cm3": 7.85,                   // Low-carbon steel constant
+                    "tensile_strength_mpa": 400.0,
+                    "thermal_conductivity_w_mk": 50.2,
+                    "melting_point_k": 1783.0
+                },
+                "chemical_metadata": {
+                    "primary_element_formula": "Fe",
+                    "oxidation_state_index": 0.15,          // Scale of 0.0 (pristine) to 1.0 (corroded)
+                    "acid_reactivity_coefficient": 0.85     // Highly susceptible to hydrochloric solutions
                 }
             },
             {
-                "id": "env_alley_neon",
-                "type": "environment",
-                "tags": ["urban", "cyberpunk", "rainy", "dark"],
-                "metadata": {
-                    "lighting": "neon_low_key",
-                    "choke_points": ["dumpster_corner", "fire_escape"]
-                }
-            },
-            {
-                "id": "prop_shard_blade",
-                "type": "item",
-                "tags": ["weapon", "cyberpunk", "lethal"],
-                "metadata": {
-                    "material": "monomolecular_carbon",
-                    "emissive_color": "#00ffcc"
-                }
-            },
-            {
-                "id": "env_desert_wasteland",
-                "type": "environment",
-                "tags": ["barren", "sunny", "arid"],
-                "metadata": {
-                    "lighting": "harsh_sunlight",
-                    "choke_points": ["dune_crest"]
+                "id": "fluid_coolant_01",
+                "type": "chemical_agent",
+                "tags": ["liquid", "hazardous", "reactive"],
+                "visuals": {
+                    "shader_variant": "FX/Fluids/CorrosiveAcid",
+                    "emissive_color_hex": "#39FF14"
+                },
+                # ---- PURE SCIENCE / SIMULATION TRACKS ----
+                "physics_metadata": {
+                    "density_g_cm3": 1.18,                   // Corresponds to highly concentrated HCl
+                    "viscosity_pa_s": 0.0019,
+                    "specific_heat_j_kgk": 3120.0,
+                    "boiling_point_k": 381.0
+                },
+                "chemical_metadata": {
+                    "primary_element_formula": "HCl(aq)",
+                    "ph_level": 1.1,
+                    "corrosivity_rating": 0.95              // Drives immediate material degradation calculations
                 }
             }
         ]
 
-    def query_by_tags(self, required_tags: List[str]) -> List[Dict[str, Any]]:
-        """Returns assets that match all designated category filters."""
-        return [
-            asset for asset in self.assets
-            if all(tag in asset["tags"] for tag in required_tags)
-        ]
-
-
-class CuratorEngine:
-    """Orchestrates asset selection matrices to fulfill open-ended narrative tangents."""
-    
-    def __init__(self, db: CatalogDatabase) -> None:
-        self.db = db
-
-    def assemble_tangent_blueprint(self, current_context_tags: List[str]) -> Dict[str, Any]:
-        """
-        Extracts made-to-measure structural data properties from the database 
-        to guarantee uninterrupted cinematic continuity.
-        """
-        matched_assets = self.db.query_by_tags(current_context_tags)
+    def query_tangent_constraints(self, intersection_tags: List[str]) -> Dict[str, Any]:
+        """Compiles a complete made-to-measure simulation blueprint for the client runtime."""
+        matched = [a for a in self.assets if any(t in a["tags"] for t in intersection_tags)]
         
-        # Build the architectural blueprint for the downstream runtime generation models
-        blueprint = {
-            "requested_context_filters": current_context_tags,
-            "assets_compiled": len(matched_assets),
-            "manifest": []
+        return {
+            "simulation_matrix_version": "2026.4.1",
+            "active_constraints_compiled": len(matched),
+            "payload": matched
         }
-        
-        for asset in matched_assets:
-            blueprint["manifest"].append({
-                "asset_id": asset["id"],
-                "asset_type": asset["type"],
-                "structural_specs": asset["metadata"]
-            })
-            
-        return blueprint
 
 
-# ==========================================
-# SIMULATION PIPELINE EXECUTION
-# ==========================================
 if __name__ == "__main__":
-    print("--- Initializing GCC Curator Engine Context Pipeline ---")
-    
-    # Instantiate database and orchestrator components
-    catalog_db = CatalogDatabase()
-    curator = CuratorEngine(catalog_db)
-    
-    # Simulate a user heading off on a sudden tangent into a rainy cyberpunk environment
-    user_tangent_tags = ["cyberpunk"]
-    print(f"\n[User Narrative Intersection Triggered]: {user_tangent_tags}")
-    
-    # Process assets dynamically
-    made_to_measure_blueprint = curator.assemble_tangent_blueprint(user_tangent_tags)
-    
-    # Output structured context data ready for streaming or procedural compilation
-    print("\n[Generated Blueprint For Downstream Real-time Asset Generators]")
-    print(json.dumps(made_to_measure_blueprint, indent=2))
+    catalog = ScientificAssetCatalog()
+    # Simulate an asset query for an industrial sector stress-test tangent
+    blueprint = catalog.query_tangent_constraints(["industrial", "hazardous"])
+    print(json.dumps(blueprint, indent=2))
