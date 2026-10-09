@@ -1,35 +1,43 @@
 # EncyclopedicCatalog
 
-A metadata-driven asset indexing framework designed for **Generative Cinematic Continuity (GCC)**. This repository acts as the authoritative world-state and context ledger required to piece together game-like movie assets dynamically and on-the-fly.
+An advanced, metadata-driven asset indexing framework designed for **Generative Cinematic Continuity (GCC)** and multi-variable industrial simulation platforms.
 
 ## Overview
 
-Traditional entertainment relies on fixed branching paths. **Generative Cinematic Continuity (GCC)** introduces infinite narrative freedom by allowing users to explore arbitrary tangents while maintaining rigorous consistency across characters, environments, and physics. 
+**Generative Cinematic Continuity (GCC)** bridges open-ended narrative experiences with engineering sandboxes. By enforcing absolute state persistence, the system guarantees that if a user breaks away into an arbitrary choice path, the underlying environment obeys the strict deterministic physical, mathematical, and chemical realities of the universe.
 
-The `EncyclopedicCatalog` serves as the central context broker. It stores structural boundaries and semantic data tags, allowing a downstream **Curator Engine** to query and filter real-time asset specifications (meshes, text, textures, or animations) precisely when a user dictates a shift in the story.
+The `EncyclopedicCatalog` serves as the authoritative context broker layer. It indexes structural constraints, thermal properties, and compound molecular data tracks, transforming physical boundaries on-the-fly into structured **3SAT constraint clause sets** to be verified by low-level, high-performance backends before rendering spatial assets in game engines.
 
 ## System Architecture
 
 ```mermaid
 graph TD
-    UserAction[User Tangent / Choice] -->|Trigger| Curator[Curator Engine]
-    Catalog[(Encyclopedic Catalog)] <-->|Context Queries| Curator
-    Curator -->|Made-to-Measure Blueprint| Pipeline[Asset Generation Pipeline]
-    Pipeline -->|Real-Time Asset Compilation| Engine[Target Runtime Engine / Unity]
+    UserAction[User Tangent / Input State] -->|Trigger| Curator[Python Curator Engine]
+    Catalog[(Encyclopedic Catalog Base)] <-->|Scientific Metadata| Curator
+    Curator -->|CNF Clause Structs| CPPAudio[C++ Parallel Verification Harness]
+    Curator -->|JSON Asset Manifest| Client[Unity 6 Graphic Engine]
+    CPPAudio -->|Equilibrium Flag| Client
 ```
 
-1. **The Catalog Schema**: Houses deep structural constraints, emotional vectors (e.g., Want vs. Need), environment state matrices, and generative engine parameters.
-2. **The Curator Logic**: Evaluates the incoming runtime narrative beat against active constraints to select matching or "made-to-measure" assets.
-3. **Pipeline Alignment**: Delivers standardized structural specifications to local or cloud-based AI generation models to produce persistent additions to the runtime environment.
+## Repository Composition Matrix
 
-## Getting Started
+This repository implements a production-ready blueprint partitioned into three operational language components:
 
-### Prerequisites
-- Python 3.8+
-- `typing_extensions` (for strict static type verification)
+### 1. Context Curation & Logic Generation (`curator_engine.py`)
+- **Scientific Catalog Tracking**: Maps spatial assets directly to static physical constants (density, melting point) and chemical tracks (pH profiles, formula structures).
+- **Boolean Transformation Engine**: Maps structural lattice configurations and attachment stress profiles into integer Conjunctive Normal Form (CNF) chunks formatted for standard 3SAT solvers.
 
-### Running the Reference Implementation
-To test the dynamic curation selection algorithm locally, execute the reference script:
-```bash
-python curator_engine.py
-```
+### 2. High-Performance Processing Core (`DimacsParser.cpp`)
+- **Zero-Copy Ingestion Array**: Swiftly parses incoming variable arrays straight into optimized internal vectors without parsing overhead.
+- **Parallel Verification Harness**: Spreads large-scale clause matrices across local CPU worker architectures via `std::async` threads, allowing full-scale material stress validation loops to execute under short-circuit optimization constraints.
+
+### 3. Real-Time Front-End Client Runtime (`Unity 6 Core Scripts`)
+- **`RuntimeAssetWatcher.cs`**: Ingests, parses, and executes structural layout updates dynamically using performant `JsonUtility` wrappers.
+- **`CatalogNetworkClient.cs`**: Handles an asynchronous internet communication client layer using `UnityWebRequest` loops to smoothly fetch environment state targets from a Python orchestration socket wrapper.
+
+## Verification Workflow Deployment
+
+To verify the system end-to-end:
+1. Initialize the Python broker to format your environment layout properties.
+2. Direct the serialized clause array down to the C++ parallel harness to verify physical boundary equilibrium.
+3. Broadcast the confirmed matrix directly up to the running Unity 6 client runtime node to mutate scene layout values instantly.
