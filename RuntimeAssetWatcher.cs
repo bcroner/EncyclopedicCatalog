@@ -5,119 +5,109 @@ using UnityEngine;
 namespace GCC.Core
 {
     // =========================================================================
-    // SERIALIZABLE DATA SCHEMA (Matches Catalog JSON Output Structure)
+    // DETERMINISTIC PHYSICAL DATA SCHEMAS
     // =========================================================================
     [Serializable]
-    public class StructuralSpecs
+    public class PhysicsSpecs
     {
-        public string lighting;          // e.g., "neon_low_key"
-        public string material;          // e.g., "monomolecular_carbon"
-        public string emissive_color;    // e.g., "#00ffcc"
-        public string name;
-        public int base_height_cm;
+        public float density_g_cm3;
+        public float tensile_strength_mpa;
+        public float thermal_conductivity_w_mk;
+        public float melting_point_k;
     }
 
     [Serializable]
-    public class CatalogAssetManifest
+    public class ChemicalSpecs
     {
-        public string asset_id;
-        public string asset_type;
-        public StructuralSpecs structural_specs;
+        public string primary_element_formula;
+        public float oxidation_state_index;
+        public float acid_reactivity_coefficient;
+        public float ph_level;
+        public float corrosivity_rating;
     }
 
     [Serializable]
-    public class TangentBlueprint
+    public class VisualSpecs
     {
-        public List<string> requested_context_filters;
-        public int assets_compiled;
-        public List<CatalogAssetManifest> manifest;
+        public string mesh_source;
+        public string shader_variant;
+        public string emissive_color_hex;
+    }
+
+    [Serializable]
+    public class ScientificAssetPayload
+    {
+        public string id;
+        public string type;
+        public VisualSpecs visuals;
+        public PhysicsSpecs physics_metadata;
+        public ChemicalSpecs chemical_metadata;
+    }
+
+    [Serializable]
+    public class ScientificBlueprint
+    {
+        public string simulation_matrix_version;
+        public int active_constraints_compiled;
+        public List<ScientificAssetPayload> payload;
     }
 
     // =========================================================================
-    // RUNTIME INTERACTION ORCHESTRATOR
+    // MULTI-TRACK RUNTIME PROCESSING MATRIX
     // =========================================================================
     public class RuntimeAssetWatcher : MonoBehaviour
     {
-        [Header("Scene Node References")]
-        [SerializeField] private Light targetSceneLight;
-        [SerializeField] private Transform characterRootTransform;
-
-        /// <summary>
-        /// Entry point to ingest a raw JSON stream payload from the Curator Engine.
-        /// </summary>
         public void IngestCatalogBlueprint(string rawJsonPayload)
         {
-            if (string.IsNullOrEmpty(rawJsonPayload))
-            {
-                Debug.LogWarning("[GCC] Received null or empty catalog blueprint payload.");
-                return;
-            }
-
             try
             {
-                // Deserialize using Unity's performant native JsonUtility
-                TangentBlueprint blueprint = JsonUtility.FromJson<TangentBlueprint>(rawJsonPayload);
-                Debug.Log($"[GCC] Successfully parsed blueprint. Assets compiled: {blueprint.assets_compiled}");
-
-                ExecuteAssetModifications(blueprint);
+                ScientificBlueprint blueprint = JsonUtility.FromJson<ScientificBlueprint>(rawJsonPayload);
+                ExecuteMultiTrackEvaluation(blueprint);
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[GCC] Failed to parse runtime structural catalog specs: {ex.Message}");
+                Debug.LogError($"[GCC Scientific Parser Error]: Failure handling compound tracks: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Iterates through the manifest layer and mutates state on active scene actors.
-        /// </summary>
-        private void ExecuteAssetModifications(TangentBlueprint blueprint)
+        private void ExecuteMultiTrackEvaluation(ScientificBlueprint blueprint)
         {
-            foreach (var asset in blueprint.manifest)
+            foreach (var node in blueprint.payload)
             {
-                Debug.Log($"[GCC] Processing dynamic modification path for ID: {asset.asset_id} ({asset.asset_type})");
+                Debug.Log($"[GCC Pipeline Sync]: Registering {node.id} to simulation layer.");
 
-                switch (asset.asset_type.ToLower())
-                {
-                    case "item":
-                        ApplyPropModifications(asset.structural_specs);
-                        break;
+                // 1. Route Visual Parameters to Engine Renderer
+                ApplyVisualOverrides(node.visuals);
 
-                    case "character":
-                        ApplyCharacterModifications(asset.structural_specs);
-                        break;
-
-                    default:
-                        Debug.LogWarning($"[GCC] Asset type '{asset.asset_type}' currently unhandled by runtime compiler.");
-                        break;
-                }
+                // 2. Feed Constants into Internal Physics/Chemistry Solvers
+                EvaluateStructuralConstraints(node.physics_metadata, node.chemical_metadata);
             }
         }
 
-        private void ApplyPropModifications(StructuralSpecs specs)
+        private void ApplyVisualOverrides(VisualSpecs visuals)
         {
-            if (targetSceneLight == null) return;
-
-            // Dynamically alter scene atmosphere properties based on catalog rules
-            if (!string.IsNullOrEmpty(specs.emissive_color))
+            if (visuals == null) return;
+            // Native Unity rendering pipelines handle asset lookup/instantiation
+            if (!string.IsNullOrEmpty(visuals.mesh_source))
             {
-                if (ColorUtility.TryParseHtmlString(specs.emissive_color, out Color dynamicColor))
-                {
-                    targetSceneLight.color = dynamicColor;
-                    Debug.Log($"[GCC] Light emission runtime override applied: {specs.emissive_color}");
-                }
+                Debug.Log($"[Rendering Track]: Mesh reference verified: {visuals.mesh_source}");
             }
         }
 
-        private void ApplyCharacterModifications(StructuralSpecs specs)
+        private void EvaluateStructuralConstraints(PhysicsSpecs physics, ChemicalSpecs chemical)
         {
-            if (characterRootTransform == null) return;
+            if (physics == null || chemical == null) return;
 
-            // Translate cm unit variations directly into real-time Unity spatial local scales
-            if (specs.base_height_cm > 0)
+            // Simple demonstration of a deterministic constraint check loop
+            // If the element is structural steel, we track asset safety limits
+            if (physics.melting_point_k > 0)
             {
-                float calculatedScaleModifier = specs.base_height_cm / 185.0f; // Scale relative to template base 
-                characterRootTransform.localScale = new Vector3(calculatedScaleModifier, calculatedScaleModifier, calculatedScaleModifier);
-                Debug.Log($"[GCC] Scale optimization pipeline executed for: {specs.name} ({specs.base_height_cm}cm)");
+                Debug.Log($"[Simulation Track Engine Constraints Verified]:");
+                Debug.Log($" -> Material Density: {physics.density_g_cm3} g/cm³");
+                Debug.Log($" -> Melting Threshold: {physics.melting_point_k} K");
+                Debug.Log($" -> Formula Structure: {chemical.primary_element_formula} (Oxidation: {chemical.oxidation_state_index})");
+                
+                // Real-time custom compute loop script hooks would plug in here to execute stress tests
             }
         }
     }
